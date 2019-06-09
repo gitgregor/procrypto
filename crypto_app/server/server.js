@@ -10,6 +10,7 @@ const Data = require('./models/cryptoModel')
 
 const API_PORT = 3001;
 const app = express();
+app.use(cors());
 const router = express.Router();
 
 // this is our MongoDB database
@@ -36,26 +37,20 @@ app.use(logger('dev'));
 router.post('/a', (req, res) => {
     let data = new Data();
 
-    // if (!req.body.price_usd) {
-    //     return res.json({
-    //         success: false,
-    //         error: 'INVALID INPUTS',
-    //     });
-    // }
-
     data.price_usd = req.body.price_usd
     data.last_updated = req.body.last_updated
 
     data.save(() => {
         return res.json({ success: true });
     });
-    // data.save((err) => {
-    //     if (err) return res.json({ success: false, error: err });
-    //     return res.json({ success: true });
-    // });
 })
 
-
+router.get('/getData', (req, res) => {
+    Data.find((err, data) => {
+        if (err) return res.json({ success: false, error: err });
+        return res.json({ success: true, data: data });
+    });
+});
 
 
 // append /api for our http requests
